@@ -1,0 +1,122 @@
+---
+title: "ANALISIS PENGHASILAN TAHUNAN PENDAPATAN TINGGI PENDUDUK DEWASA AMERIKA SERIKAT MENGGUNAKAN METODE KLASIFIKASI SUPPORT VECTOR MACHINE (SVM)"
+author: "Sulistia Fahri"
+date: "2023-12-17"
+output: 
+---
+
+UCI Machine Learning Repository menyediakan data berjudul Adult Census Income yang merupakan dataset yang diperoleh dari sensus penduduk amerika serikat (https://www.census.gov/en.html) pada tahun 1994. Dataset ini berfokus pada penduduk dengan rentang usia di atas 16 tahun yang sudah bekerja atau umur dan sudah dianggap legal untuk melakukan pekerjaan. Informasi yang ada dalam dataset tersebut berkaitan dengan usia, jenis kelamin, etnis, status pernikahan, pekerjaan, pendapatan dan terkait sosial ekonomi lainnya. Berdasarkan data tersebut menunjukkan bahwa jumlah data terdiri dari 48.842 jiwa data sensus dengan jumlah variabel sebanyak 14 variabel. 
+
+Berdasarkan data pendapatan tinggi penduduk dewasa Amerika Serikat tersebut tersedia variabel yang menyatakan kategori pendapatan dari penduduk dewasa yang telah bekerja. Klasifikasi tersebut dibedakan menjadi dua buah klasifikasi yaitu dengan pendapatan lebih besar dari $50.000 per-tahun atau lebih kecil dari $50.000 per tahun. Berdasarkan data yang diperoleh juga menunjukkan bahwa penting untuk mengetahui faktor yang menjadi penentu pendapatan tinggi bagi orang dewasa atau dengan kata lain faktor yang memiliki korelasi yang kuat terhadap pendapatan yang tinggi bagi pekerja. 
+
+Berdasarkan data yang dihasilkan juga menunjukkan klasifikasi yang diperoleh merupakan biner berupa pendapatan tinggi (>$50k) dan pendapatan rendah (>$50k). Hal tersebut juga menunjukkan bahwa metode yang sesuai untuk data ini merupakan metode klasifikasi hal tersebut bertujuan untuk pengkasifikasian data berdasarkan variabel yang ada. Banyak metode klasifikasi yang dapat digunakan, namun jika jumlah dataset berjumlah besar maka metode yang paling efesien untuk digunakan merupakan metode klasifikasi menggunakan decision tree, support vector mechine (SVM), dan neural network. Jika berdasarkan hasil klasifikasi menunjukkan bahwa hasil klasifikasi akurat maka akan sangat membantu dalam mengabil kebijakan guna meningkatkan kesejahteraan masyarakat. Penelitian ini menggunakan metode SVM, hal tersebut dikarenakan SVM merupakan salah satu metode yang dapat mengklasifikasikan data dengan cara memisahkan data menjadi dua kelas yang berbeda dan hal tersebut didukung dengan jumlah klasifikasi pendapatan yang biner berupa pendapatan tinggi (>$50k) dan pendapatan rendah (>$50k). Selain itu penggunaan metode SVM juga didukung karena data termasuk berjumlah yang besar.
+
+Supervised learning adalah pendekatan stqtistika yang digunakan untuk mengkarakteisasikan hubungan variabel target berdasarkan informasi pada predictor dalam data yang nantinya digunakan dalam pembuatan model dan prediksi. SVM digunakan untuk melatih pengklasifikasi biner, yang tujuannya adalah untuk memprediksi apakah seseorang berpenghasilan lebih dari $50K atau tidak per tahun berdasarkan pada faktor sosial dan untuk mengetahui faktor apa saja yang paling mempengaruhi tingkat pendapatan (Chen, 2021).
+SVM adalah sebuah usaha dalam pengklasifikasian yang dilakukan untuk mencari hyperplane berfungsi untuk memisahkan dua kelas klasifikasi (Hariono, 2018).  Berdasarkan karakteristiknya, metode SVM dibedakan menjadi dua yaitu SVM Linier dan SVM Non linier. SVM linier adalah data terpisah secara linear yaitu memisahkan kedua kelas pada hyperplane dengan soft margin. Sedangkan SVM Non-Linear menerapkan fungsi trik kernel ruang berdimensi tinggi (Rachman, 2012). Kelas klasifikasi menggunakan akan dibedakan menjadi 2 dataset kelas yang hyperplane ditandai dengan nilai 1 sedangkan kelas lainnya ditandai dengan nilai -1. 
+
+
+Preprocessing data 
+
+	Preprocessing data adalah Langkah yang dilakukan untuk mempersiapkan data penelitian berupa membersihkan, merapikan  data agar efektif digunakan dalam proses analisis berupa pembuatan model dan prediksi data. Pembersihan data atau data cleaning adalah suatu proses yang dilakukan untuk mengidentifikasi data dengan menghapus kesalahan dalam kumpulan data. Penghapusan data dilakukan untuk membuat kualitas data menjadi lebih baik khususnya dalam pembuatan model sehingga diperlukan pembersihan data dengan menghapus baris pada data kosong (NA). Pembersihan data ini juga dilakukan agar tingkat akurasi pada data bisa menjadi lebih baik.
+
+
+
+Konversi data kategori menjadi data faktor
+
+	Perubahan data kategori menjdi bentuk faktor bertujuan agar setiap variabel penelitian dapat digunakan dalam penelitan dalan pembetunkan model. Proses ini perlu dilakukan untuk penelitian berbasis mechine learning yang membutuhkan data numerik untuk proses pembuatan model hingga mendapatkan hasil akhirnya sehingga perlu dilakukan konversi data menjadi faktor yang berbentuk  numerik.
+
+Split data menjadi training data dan testing data
+
+	Split atau pembagian data menjadi training dan testing merupakan suatu Langkah untuk pengembangan model dalam bidang mechine learning. Proses ini dilakukan dengan cara membagi data menjadi 80% data training dan 20% menjadi data testing, dimana data training digunakan untuk mendapatkan model dan data testing digunakan untuk melihat tingkat akurasi model.
+
+Pembuatan model
+
+	Pembuatan model menjadi bagian paling utama yang sangat diperlukan dalam mechine learning karena akan menyakup terkait hasil yang didapatkan dalam penelitian. Pembetukan model harus dilakukan dengan pemilihan model yang sesuai dengan data penelitian artinya pembuatan model perlu dilakukan setelah menentukan tipe masalah pada data penelitian dan memilih model menggunakan data yang sesuai dengan karakteristiknya. Pembuatan model juga diperlukan untuk dapat membuat prediksi dengan data baru atau data testing.
+
+Prediksi data 
+
+	Prediksi data dilakukan untuk melatih model penelitian dengan data baru. Proses ini membutuhkan model untuk melakukan prediksi dengan data baru. Prediksi akan mendapatkan interpretasi sesuai dengan jenis masalah yang ada dan hasil yang didapatkan. Prediksi data dapat dilakukan jika telah melakukan preprocessing terlebih dahulu dan prediksi ini dilakukan untuk data testing setelah dilakukan split data pada Langkah 2.
+
+Evaluasi akurasi model
+
+	Evaluasi akurasi model dilakukan untuk melihat kinerja model yang digunakan dalam penelitian. Evaluasi akurasi model akan melibatkan tingkat atau rasio prediksi yang benar terhadap total dari prediksi dalam penelitian. Evaluasi ini dilakukan dengan menggunakan hitungan data yang diklasifikan dengan benar dan salah.
+
+HASIL
+
+*4.1 Pemanggilan data:*
+```{r}
+# Load library
+library(dplyr)
+library(tidyverse)
+
+adult<-read.csv("C:/Users/ASUS/Documents/adult.csv")
+```
+*4.2 Preprocessing data*
+```{r}
+# Preprocessing data
+adult <- adult %>%
+  # Ubah variabel categorical menjadi factor
+  mutate_at(vars(workclass, education, marital_status, occupation, relationship, race, sex, native_country, income), as.factor)
+#atau
+adult$workclass <- as.factor(adult$workclass)
+adult$native_country <- as.factor(adult$native_country)
+adult$marital_status <- as.factor(adult$marital_status)
+adult$occupation <- as.factor(adult$occupation)
+adult$income<-as.factor(adult$income)
+
+adult[adult == "?"] <- NA
+is.na(adult) <- adult == "?"
+adult <- na.omit(adult)
+library(Amelia)
+missmap(adult)
+```
+
+Berdasarkan sintax dan grafik di atas menunjukkan bahwa setiap observasi yang memiliki NA telah dihapus sehingga Missing yang didapatkan adalah 0% dari total jumlah observasi.
+
+*4.3	Split data menjadi training data dan testing data*
+```{r}
+# Split data training dan testing
+set.seed(10000) 
+ind <- sample(2, nrow(adult), replace = TRUE, prob = c(0.8, 0.2))
+train <- adult[ind == 1, ]
+test <- adult[ind == 2, ]
+dim(train)
+
+dim(test)
+```
+
+*4.4 Pembuatan model*
+```{r}
+# Formula prediction 
+train$income<-as.factor(train$income)
+test$income<-as.factor(test$income)
+formula <- income ~ age + education_num + hours_per_week
+
+# Bangun model SVM 
+library(e1071)
+library(caret)
+model_svm <- svm(formula, 
+                 data = train,
+                 type = "C-classification",
+                 kernel = "radial")
+summary(model_svm)
+```
+
+Berdasarkan gambar 4.4 di atas merupakan formulasi pembuatan model SVM. Beberapa ringkasan output pada gambar menunjukkan bahwa SVM yang digunakan adalah untuk klasifikasi (C-classdification). SVM-Kernel : radial menunjukkan bahwa kernel yang dipakai berbasis radial yang fungsinya untuk dapat memtakan data yang memiliki dimensi tinggi. Jumlah vector pendukung yang digunakan model untuk membentuk klasifikasi adalah 11243 dengan kelas atau target klasifikasi ada 2 yaitu penghasilan yang “<=50K” dan “>50K”.
+
+*4.5	Prediksi data*
+```{r}
+pred_svm <- predict(model_svm, newdata = test)
+head(pred_svm)
+```
+
+Berdasarkan tampilan pada output di atas menampilkan hasil prediksi menggunakan data test dengan model yang didapatkan sebelumnya. Adapun pembuktian hasil klasifikasinya ditampilkan pada data teratas saja.
+
+
+*4.6	Evaluasi akurasi model*
+```{r}
+# Evaluasi model menggunakan data testing
+confusionMatrix(data = pred_svm, reference = test$income)
+```
+
+Berdasarkan gambar 4.6 di atas menunjukkan bahwa nilai akurasi model yang digunakan didapatkan sebanyak 79,92%. Berdasarkan nilai sensitifitas di atas menunjukkan bahwa 94,18% keakuratan kelas <=50K diklasifikasikan dengan benar dengan presisinya sebesar 82,12% sedangkan untuk kelas >50K yang diklasifikasikan benar sebagai >50K adalah sebesar 34% dengan presisi prediksinya sebesar 64,5%.

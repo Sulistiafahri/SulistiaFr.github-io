@@ -1,0 +1,360 @@
+---
+title: "Forecasting the Popularity of AI Tools in 2025: Analysis on Global Search Trends"
+author: "Sulistia_Fahri"
+output: html_document
+---
+```{r}
+# Load library
+library(readr)
+library(dplyr)
+library(lmtest)
+library(tidyr)
+library(tidyverse)
+library(ggplot2)
+library(forecast)
+library(lubridate)
+library(tseries)
+library(zoo)      # untuk konversi data menjadi tipe Date (to confirmatory the data be date type)
+library(reshape2)  # Untuk melt data # for melt data
+library(purrr)  # Untuk fungsi map_dfr() # for function map_dfr()
+```
+
+```{r}
+# Load data
+data <- read_csv("C:/Users/ASUS/Downloads/multiTimeline.csv", skip = 1)
+```
+
+
+```{r}
+# Cek struktur data
+#structure data check
+str(data)
+```
+```{r}
+# Cara Mengubah nilai dalam data 
+# The way to Change data's value
+data$`Gemini AI: (Worldwide)`[data$`Gemini AI: (Worldwide)` == "<1"] <- 0
+data$`Claude AI: (Worldwide)`[data$`Claude AI: (Worldwide)` == "<1"] <- 0
+data$`MidJourney: (Worldwide)`[data$`MidJourney: (Worldwide)` == "<1"] <- 0
+data$`DeepSeek: (Worldwide)`[data$`DeepSeek: (Worldwide)` == "<1"] <- 0
+
+# Cara Mengubah tipe data karakter ke nomor/bilangan
+# The way to Change character data type to the number type
+data$`MidJourney: (Worldwide)` <- as.numeric(data$`MidJourney: (Worldwide)`)
+data$`DeepSeek: (Worldwide)` <- as.numeric(data$`DeepSeek: (Worldwide)`)
+data$`Gemini AI: (Worldwide)`<- as.numeric(data$`Gemini AI: (Worldwide)`)
+data$`Claude AI: (Worldwide)`<- as.numeric(data$`Claude AI: (Worldwide)`)
+str(data)
+
+# Cara mengubah format ke time series (format data mingguan (52 observasi per tahun))
+# The way to Change format of data to time series (Weekly data (52 observations yearly)) 
+ts_chatgpt <- ts(data$`chat gpt: (Worldwide)`, start = c(2023, 1), frequency = 52)
+ts_gemini <- ts(data$`Gemini AI: (Worldwide)`, start = c(2023, 1), frequency = 52)
+ts_claude <- ts(data$`Claude AI: (Worldwide)`, start = c(2023, 1), frequency = 52)
+ts_midjourney <- ts(data$`MidJourney: (Worldwide)`, start = c(2023, 1), frequency = 52)
+ts_deepseek <- ts(data$`DeepSeek: (Worldwide)`, start = c(2023, 1), frequency = 52)
+```
+
+```{r}
+# Gabungkan semua time series
+# Group multiple time series
+data_plot <- data.frame(
+  Time = time(ts_chatgpt),
+  ChatGPT = as.numeric(ts_chatgpt),
+  Gemini = as.numeric(ts_gemini),
+  Claude = as.numeric(ts_claude),
+  Midjourney = as.numeric(ts_midjourney),
+  DeepSeek = as.numeric(ts_deepseek)
+)
+
+# Ubah format ke long
+# Change the format to long
+data_long <- melt(data_plot, id.vars = "Time")
+
+# Buat plot
+# Make the plot
+ggplot(data_long, aes(x = Time, y = value, color = variable)) +
+  geom_line() +
+  scale_color_manual(values = c("blue", "red4", "green2", "purple", "orange3")) +
+  labs(title = "AI Tools Search Trends",
+       y = "Search Interest",
+       x = "Time",
+       color = "AI Tools") +
+  theme_minimal()
+```
+
+grafik di atas menunjukkan bahwa AI paling banyak digunakan adalah Chat GPT. Hal ini dilihat berdasarkan garis dalam grafik yang terus meninggkat.
+the Graph show that the most used AI tools is Chat GPT, this is seen through the line that continues to increase. 
+
+```{r}
+# Uji stasioneritas terhadap mean
+# stasionerity test on mean
+adf_pvals <- sapply(data[,-1], function(x) adf.test(x)$p.value)
+
+# Buat data frame hasilnya
+# make the result in data frame
+result <- data.frame(
+  `ADF p-value` = round(adf_pvals, 4),
+  Stasioner = ifelse(adf_pvals < 0.05, "Stationery", "Not Stationery")
+)
+print(result)
+```
+Hipotesis (Hypothesis):
+
+H0: Data tidak stasioner (Data is not stationery)
+
+H1: Data stasioner (Data is stationary)
+
+Jika p−value< α maka data stastioner (If p-value <  α so data is stationery).
+
+Dapat dilihat bahwa p-value > α (0,05). 
+The output show that p-value >  α (0.05).
+
+Karena p-value > 0.05, maka tidak bisa menolak H0 dan menyimpulkan bahwa data tidak stasioner.
+because p-value > 0.05, so can't to reject H0 and show that the data is not stationery.
+
+```{r}
+# Melakukan differencing karna tidak stasioner terhadap mean
+# Make a defentiation cause data not stasionery on mean
+ts_diff <- data.frame(
+  diff(data$`chat gpt: (Worldwide)`, differences = 1),
+  diff(data$`Claude AI: (Worldwide)`, differences = 1), 
+  diff(data$`Gemini AI: (Worldwide)`, differences = 1),
+  diff(data$`MidJourney: (Worldwide)`, differences = 1),
+  diff(data$`DeepSeek: (Worldwide)`, differences = 1)
+)
+
+# ADF test
+adf_pvals_diff <- sapply(ts_diff, function(x) adf.test(x)$p.value)
+
+# Buat data frame hasilnya
+# make the result in data frame
+result_diff <- data.frame(
+  `ADF p-value` = round(adf_pvals_diff, 4),
+  Stasioner = ifelse(adf_pvals_diff < 0.05, "Stationery", "Not Stationery")
+)
+
+# Tampilkan hasil
+print(result_diff)
+```
+Hipotesis (Hypothesis):
+
+H0: Data tidak stasioner (Data is not stationery)
+
+H1: Data stasioner (Data is stationary)
+
+Jika p−value< α maka data stastioner (If p-value <  α so data is stationery).
+
+Dapat dilihat bahwa p-value < α (0,05). 
+The output show that p-value <  α (0.05).
+
+Karena p-value < 0.05, maka bisa menolak H0 dan menyimpulkan bahwa data stasioner.
+because p-value < 0.05, so rejects H0 and show that the data is stationery.
+
+
+```{r}
+# Plot hasil differencing
+# Resul plot Differenced
+
+data_plot_diff <- data.frame(
+  Time = time(ts_chatgpt)[-1],  # Hilangkan observasi pertama karena differencing
+  ChatGPT = as.numeric(diff(ts_chatgpt)),
+  Claude = as.numeric(diff(ts_claude)),
+  Gemini = as.numeric(diff(ts_gemini)),
+  Midjourney = as.numeric(diff(ts_midjourney)),
+  DeepSeek = as.numeric(diff(ts_deepseek))
+)
+
+# Ubah format ke long
+data_long1 <- melt(data_plot_diff, id.vars = "Time")
+
+# Plot dengan ggplot
+ggplot(data_long1, aes(x = Time, y = value, color = variable)) +
+  geom_line() +
+  scale_color_manual(values = c("blue", "red4", "green2", "purple", "orange3")) +
+  labs(title = "AI Tools Search Trends",
+       y = "Search Interest",
+       x = "Time",
+       color = "AI Tools") +
+  theme_minimal()
+```
+
+```{r}
+#Pembentukan model, Uji White Noise Model, dan Uji normalitas Model
+#model formation dan White Noise test, and normality test model
+model1 <- auto.arima(ts_chatgpt) 
+model2 <- auto.arima(ts_claude)  
+model3 <- auto.arima(ts_gemini)  
+model4 <- auto.arima(ts_midjourney) 
+model5 <- auto.arima(ts_deepseek)  
+
+# Simpan semua model dalam list
+# Save model in the list 
+models <- list(
+  chatgpt = model1,
+  claudeai = model2,
+  gemini = model3,
+  midjourney = model4,
+  deepdeek = model5
+)
+
+# 1. Pembentukan model (model formation)
+diagnostics <- data.frame(
+  Model = names(models), # Use the name from list before
+  
+# White Noise test/Ljung-Box Test
+LB_pvalue = sapply(models, 
+                    function(m) Box.test(m$residuals, type="Ljung-Box")$p.value),
+  
+# normality test using Shapiro-Wilk Test
+SW_pvalue = sapply(models,
+                    function(m) shapiro.test(m$residuals)$p.value)
+) %>%
+  mutate(
+    LB_Conclusion = ifelse(LB_pvalue > 0.05, "White Noise", "Not White Noise"),
+    SW_Conclusion = ifelse(SW_pvalue > 0.05, "Normal", "Non-Normal")
+  )
+print(diagnostics)
+```
+Berdasarkan output di atas menunjukkan bahwa model memenuhi syarat white noise walaupun tidak berdistribusi normal
+Base on the output showed that the  models qualified for White Noise although not normally distributed
+
+```{r}
+#Significant test 
+# membuat fungsi untuk membuat tabel signifikansi
+# make a function for significance table 
+create_sig_table <- function(model_list) {
+  result <- data.frame()
+  
+  for (model_name in names(model_list)) {
+    model <- model_list[[model_name]]
+    ct <- coeftest(model)
+    
+    temp_df <- data.frame(
+      Model = model_name,
+      Koefisien = rownames(ct),
+      Estimate = ct[,1],
+      Std.Error = ct[,2],
+      z.value = ct[,3],
+      p.value = ct[,4],
+      Signifikan = ifelse(ct[,4] < 0.05, "Signifikan", "Not Signifikan"),
+      stringsAsFactors = FALSE
+    )
+    
+    result <- rbind(result, temp_df)
+  }
+  
+  return(result)
+}
+
+significance_table <- create_sig_table(models) #Membuat tabel signifikansi (make significance table)
+print(significance_table)
+```
+Berdasarkan output di atas menunjukkan bahwa sebagian besar model merupakan model yang signifikan
+Base on the output showed almost all models are a significant.
+
+```{r}
+# prediksi 12 minggu ke depan
+# predict for 12 weeks after
+forecast_chatgpt <- forecast(model1, h = 12)
+forecast_claudeai <- forecast(model2, h = 12)
+forecast_gemini <- forecast(model3, h = 12)
+forecast_midjourney <- forecast(model4, h = 12)
+forecast_deepseek <- forecast(model5, h = 12)
+
+# 1. Ambil data historis (dari model)
+# 1. take the historical data (from model)
+real_date <- time(model1$x)
+real_data <- data.frame(
+  Date = as.Date(as.yearmon(real_date)),
+  ChatGPT = as.numeric(model1$x),
+  ClaudeAI = as.numeric(model2$x),
+  Gemini = as.numeric(model3$x),
+  Midjourney = as.numeric(model4$x),
+  DeepSeek = as.numeric(model5$x),
+  Discription = "Actual"
+)
+
+# 2. Ambil data prediksi (forecast$mean)
+# 2. take the prediction data (forecast$mean)
+predict_date <- time(forecast_chatgpt$mean)
+predict_data <- data.frame(
+  Date = as.Date(as.yearmon(predict_date)),
+  ChatGPT = as.numeric(forecast_chatgpt$mean),
+  ClaudeAI = as.numeric(forecast_claudeai$mean),
+  Gemini = as.numeric(forecast_gemini$mean),
+  Midjourney = as.numeric(forecast_midjourney$mean),
+  DeepSeek = as.numeric(forecast_deepseek$mean),
+  Discription = "Prediction"
+)
+
+# 3. Gabungkan data historis + prediksi
+# 3. combine the historical and prediction data
+Combined_data <- bind_rows(real_data, predict_data)
+head(Combined_data, 5)
+tail(Combined_data, 5)
+```
+
+```{r}
+# Ubah ke long format
+# change to long format
+df_long <- Combined_data %>%
+  pivot_longer(cols = c(ChatGPT, ClaudeAI, Gemini, Midjourney, DeepSeek),
+               names_to = "AI_type",
+               values_to = "Values")
+
+# Pastikan kolom tanggal dalam format Date
+# make sure that the Date is in Date format/type
+df_long$tanggal <- as.Date(df_long$Date)
+
+# Ambil rentang tanggal untuk data prediksi
+# take the rate of date for prediction data 
+pred_range <- df_long %>%
+  filter(Discription == "Prediction") %>%
+  summarise(start = min(Date), end = max(Date))
+
+ggplot() +
+  # Ubah Latar belakang untuk data prediksi
+  # change the background of data prediction
+  geom_rect(data = pred_range, 
+            aes(xmin = start, xmax = end, ymin = -Inf, ymax = Inf), 
+            fill = "lavenderblush3", alpha = 0.2) +
+  
+  # Garis data semua AI
+  # make the data line for all AI
+  geom_line(data = df_long, 
+            aes(x = Date, y = Values, color = AI_type, group = interaction(AI_type, Discription)),
+            size = 0.5) +
+  
+  labs(title = "Forecasting the Popularity of AI Tools in 2025: Analysis on Global Search Trends",
+       x = "Year",
+       y = "Values",
+       color = "AI Type") +
+  theme_minimal() +
+  theme(legend.position = "side")
+
+```
+
+```{r}
+# Nilai akurasi
+# Akuaration Value
+
+# Fungsi untuk ekstrak metrik akurasi
+# function for extract accuracy matrix 
+get_accuracy <- function(model) {
+  acc <- accuracy(model)
+  data.frame(
+    RMSE = acc[,"RMSE"],
+    MAE = acc[,"MAE"]
+  )
+}
+
+# Gabungkan hasil akurasi semua model
+# Combine the result of all models
+accuracy_table <- map_dfr(models, get_accuracy, .id = "Model") %>% 
+  mutate_if(is.numeric, round, 4)
+
+print(accuracy_table)
+```
+Berdasarkan hasil akurasi yang didapatkan menunjukkan bahwa hasil prediksi yang dihasilkan cukup baik dengan tingkat kesalahan yang rendah. Hal ini dapat dilihat melalui nilai RMSE dan MAE yang relatif kecil.
+Based on the accuracy results, it shows that the prediction results generated are quite good with a small error rate. This is indicated by the relatively small RMSE and MAE values.
